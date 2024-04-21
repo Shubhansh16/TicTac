@@ -4,8 +4,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.core.view.children
+import androidx.lifecycle.lifecycleScope
 import com.example.tictactoe.databinding.ActivityMainBinding
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,7 +26,9 @@ class MainActivity : AppCompatActivity() {
             //reset click listener
             btnReset.setOnClickListener {
                 //Resetting the score of both players
+                newScore(TAG_RESET)
                 //clearing the titles again
+                newGame()
             }
         }
     }
@@ -39,11 +45,87 @@ class MainActivity : AppCompatActivity() {
                 when(flag)
                 {
                     0 -> {
-                        
+                       //turn of the first player
+                        btn.setImageResource(R.drawable.ic_o)
+                        btn.tag= TAG_O
+                        card0.strokeWidth =0
+                        cardX.strokeWidth =2
+                        //changing the turn
+                        flag=1
+                    }
+
+                    1 -> {
+                        //turn of the second player
+                        btn.setImageResource(R.drawable.ic_x)
+                        btn.tag = TAG_X
+                        cardX.strokeWidth =0
+                        cardX.strokeWidth =2
+                        //changing the turn
+                        flag=0
+                    }
+                }
+                //using a lifecycle method to introduce a delay
+                lifecycleScope.launch {
+                    //checking the pre-defined conditions for winning the XO game
+                    if(iv1.tag==iv2.tag && iv2.tag==iv3.tag && iv3.tag!=null) {
+                       //find the winner of the game through the selected image view tag
+                        newScore(iv1.tag.toString())
+                        withAnimation(iv1,iv2,iv3)
+                    }
+                    else if(iv4.tag==iv5.tag && iv5.tag==iv6.tag && iv6.tag!=null) {
+                        //find the winner of the game through the selected image view tag
+                        newScore(iv4.tag.toString())
+                        withAnimation(iv4,iv5,iv6)
+                    }
+                    else  if(iv7.tag==iv8.tag && iv8.tag==iv9.tag && iv9.tag!=null) {
+                        //find the winner of the game through the selected image view tag
+                        newScore(iv7.tag.toString())
+                        withAnimation(iv7,iv8,iv9)
+                    }
+                    else  if(iv1.tag==iv5.tag && iv5.tag==iv9.tag && iv9.tag!=null) {
+                        //find the winner of the game through the selected image view tag
+                        newScore(iv1.tag.toString())
+                        withAnimation(iv1,iv5,iv9)
+                    }
+                    else  if(iv3.tag==iv5.tag && iv5.tag==iv7.tag && iv7.tag!=null) {
+                        //find the winner of the game through the selected image view tag
+                        newScore(iv3.tag.toString())
+                        withAnimation(iv3,iv5,iv7)
+                    }
+                    else  if(iv1.tag==iv4.tag && iv4.tag==iv7.tag && iv7.tag!=null) {
+                        //find the winner of the game through the selected image view tag
+                        newScore(iv1.tag.toString())
+                        withAnimation(iv1,iv4,iv7)
+                    }
+                    else  if(iv3.tag==iv6.tag && iv6.tag==iv9.tag && iv9.tag!=null) {
+                        //find the winner of the game through the selected image view tag
+                        newScore(iv3.tag.toString())
+                        withAnimation(iv3,iv6,iv9)
+                    }
+                    else  if(iv2.tag==iv5.tag && iv5.tag==iv8.tag && iv8.tag!=null) {
+                        //find the winner of the game through the selected image view tag
+                        newScore(iv2.tag.toString())
+                        withAnimation(iv2,iv5,iv8)
+                    }
+                    else if(counter==9){
+                        //if all the tiles are filled and there is no winner we empty the tiles
+                        Toast.makeText(this@MainActivity, "No clear winner", Toast.LENGTH_SHORT).show()
+                        newGame()
                     }
                 }
             }
         }
+    }
+
+    private suspend fun withAnimation(viewOne:View, viewTwo:View, viewThree:View){
+        //changing the color of the correct tiles to green one by one
+        viewOne.setBackgroundResource(R.drawable.board_back_green)
+        delay(200)
+        viewTwo.setBackgroundResource(R.drawable.board_back_green)
+        delay(200)
+        viewThree.setBackgroundResource(R.drawable.board_back_green)
+        delay(200)
+        newGame()
     }
 
     private fun newScore(tag:String){
